@@ -1,3 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
+
+<title>Senarai No Pacak Kolam A SGB</title>
+
+
+<style>
+
+/* =========================================================
+   RESET
+   ========================================================= */
+
 * {
   box-sizing: border-box;
 }
@@ -7,9 +28,15 @@ body {
   margin: 0;
   padding: 0;
 
+  width: 100%;
+  min-height: 100%;
+
   background: #ffffff;
 
-  font-family: Arial, Helvetica, sans-serif;
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
 
   color: #000000;
 }
@@ -20,8 +47,17 @@ body {
    ========================================================= */
 
 #status {
+
+  display: block;
+
+  width: 100%;
+
   margin: 0;
-  padding: 2px 4px 8px 4px;
+  padding: 4px 4px 8px 4px;
+
+  background: #ffffff;
+
+  font-family: Arial, Helvetica, sans-serif;
 
   font-size: 13px;
   line-height: 16px;
@@ -31,18 +67,25 @@ body {
 
 
 /* =========================================================
-   CONTAINER
+   MAIN TABLE VIEW
    ========================================================= */
 
 .table-container {
+
+  display: block;
+
   width: 100%;
   max-width: 100%;
+
+  margin: 0;
+  padding: 0;
 
   overflow-x: auto;
   overflow-y: hidden;
 
-  margin: 0;
-  padding: 0;
+  background: #ffffff;
+
+  -webkit-overflow-scrolling: touch;
 }
 
 
@@ -51,9 +94,11 @@ body {
    ========================================================= */
 
 .sheet {
+
   display: block;
 
   width: max-content;
+  min-width: max-content;
 
   margin: 0;
   padding: 0;
@@ -67,13 +112,16 @@ body {
    ========================================================= */
 
 .sheet table {
-  border-collapse: collapse;
 
+  display: table;
+
+  border-collapse: collapse;
   border-spacing: 0;
 
   table-layout: fixed;
 
   width: max-content;
+  min-width: max-content;
 
   margin: 0;
   padding: 0;
@@ -83,53 +131,62 @@ body {
 
 
 /* =========================================================
-   CELLS
+   COLUMN WIDTH
    ========================================================= */
 
-.sheet td {
-
-  box-sizing: border-box;
+.sheet col {
 
   margin: 0;
-
-  padding: 3px 6px;
-
-  font-family: Arial, Helvetica, sans-serif;
-
-  line-height: normal;
-
-  vertical-align: middle;
-
-  background-clip: padding-box;
+  padding: 0;
 
 }
 
 
 /* =========================================================
-   ZON A / ZON B
+   ROW
+   ========================================================= */
+
+.sheet tr {
+
+  margin: 0;
+  padding: 0;
+
+}
+
+
+/* =========================================================
+   CELL
    ========================================================= */
 
 .sheet td {
+
+  margin: 0;
+  padding: 3px 6px;
+
+  box-sizing: border-box;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  font-size: inherit;
+
+  line-height: normal;
+
+  color: inherit;
+
+  vertical-align: middle;
+
+  background-clip: padding-box;
 
   overflow: visible;
 
 }
 
 
-/* Keep ZON labels on ONE line */
-
-.sheet td[style*="ZON A"],
-.sheet td[style*="ZON B"] {
-
-  white-space: nowrap !important;
-
-  overflow: visible !important;
-
-}
-
-
 /* =========================================================
-   MERGED CELLS
+   CELLS WITH MERGING
    ========================================================= */
 
 .sheet td[colspan],
@@ -141,20 +198,104 @@ body {
 
 
 /* =========================================================
-   SCROLLBAR
+   ZON LABELS
+   ========================================================= */
+
+/*
+   The Google Sheet has:
+   ZON A: 001-205
+   ZON B: 206-428
+
+   Keep these on a single line.
+*/
+
+.sheet td {
+
+  white-space: nowrap;
+
+}
+
+
+/* =========================================================
+   HEADER TEXT
+   ========================================================= */
+
+.sheet td[colspan] {
+
+  white-space: nowrap;
+
+}
+
+
+/* =========================================================
+   TABLE NUMBER CELLS
+   ========================================================= */
+
+.sheet td[style*="background:#d9ead3"],
+.sheet td[style*="background:#D9EAD3"] {
+
+  background: #d9ead3;
+
+}
+
+
+/* =========================================================
+   BOOKED CELLS
+   ========================================================= */
+
+.sheet td[style*="background:#ff0000"],
+.sheet td[style*="background:#FF0000"] {
+
+  background: #ff0000;
+
+}
+
+
+/* =========================================================
+   REMOVE OUTER EMPTY GRID VISUALS
+   ========================================================= */
+
+/*
+   Empty white cells from the header area should not
+   visually create a spreadsheet grid.
+*/
+
+.sheet td[style*="border:none"] {
+
+  border: none !important;
+
+}
+
+
+/* =========================================================
+   SCROLL BAR
    ========================================================= */
 
 .table-container::-webkit-scrollbar {
+
+  width: 10px;
   height: 10px;
+
 }
 
 .table-container::-webkit-scrollbar-track {
+
   background: #eeeeee;
+
 }
 
 .table-container::-webkit-scrollbar-thumb {
+
   background: #999999;
+
   border-radius: 5px;
+
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+
+  background: #777777;
+
 }
 
 
@@ -162,14 +303,169 @@ body {
    MOBILE
    ========================================================= */
 
-@media (max-width: 600px) {
+@media screen and (max-width: 700px) {
 
   #status {
+
+    padding: 4px;
+
     font-size: 12px;
+
   }
 
   .sheet td {
+
     padding: 2px 4px;
+
   }
 
 }
+
+
+/* =========================================================
+   PRINT
+   ========================================================= */
+
+@media print {
+
+  #status {
+
+    display: none;
+
+  }
+
+  .table-container {
+
+    overflow: visible;
+
+  }
+
+  .sheet {
+
+    width: max-content;
+
+  }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =======================================================
+     STATUS
+     ======================================================= -->
+
+<div id="status">
+  Loading...
+</div>
+
+
+<!-- =======================================================
+     TABLE
+     ======================================================= -->
+
+<div class="table-container">
+
+  <div id="table"></div>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   GOOGLE APPS SCRIPT URL
+   ========================================================= */
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbxs3pvu4QUPxHRdOu7sLILk88GkOzEAA5e-l7JUUNapAC69u_UL412E2uEwHdSf5Wjb/exec";
+
+
+/* =========================================================
+   LOAD TABLE
+   ========================================================= */
+
+async function updateTable() {
+
+  try {
+
+    const response =
+      await fetch(
+        API_URL + "?t=" + Date.now(),
+        {
+          cache: "no-store"
+        }
+      );
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        "HTTP " + response.status
+      );
+
+    }
+
+
+    const data =
+      await response.json();
+
+
+    /* -----------------------------------------------
+       Put Google Sheet HTML into website
+       ----------------------------------------------- */
+
+    document.getElementById("table")
+      .innerHTML = data.html;
+
+
+    /* -----------------------------------------------
+       Update status
+       ----------------------------------------------- */
+
+    document.getElementById("status")
+      .textContent =
+        "Last updated: " + data.updated;
+
+
+  } catch (error) {
+
+    console.error(error);
+
+
+    document.getElementById("status")
+      .textContent =
+        "Update failed";
+
+  }
+
+}
+
+
+/* =========================================================
+   FIRST LOAD
+   ========================================================= */
+
+updateTable();
+
+
+/* =========================================================
+   AUTO REFRESH EVERY 5 SECONDS
+   ========================================================= */
+
+setInterval(
+  updateTable,
+  5000
+);
+
+</script>
+
+
+</body>
+
+</html>
