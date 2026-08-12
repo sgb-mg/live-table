@@ -1,30 +1,68 @@
 function doGet() {
 
-  const sheet = SpreadsheetApp
-    .openById("1TCLAVr4d3C3LRHJyCNRzVS_sqHV4ikWHa-5tafys9QM")
-    .getSheets()[0];
-
   // =========================================================
-  // ONLY THIS AREA
+  // SETTINGS
   // =========================================================
 
-  const range = sheet.getRange("A1:AA28");
+  const SPREADSHEET_ID =
+    "1TCLAVr4d3C3LRHJyCNRzVS_sqHV4ikWHa-5tafys9QM";
 
-  const values = range.getDisplayValues();
-  const backgrounds = range.getBackgrounds();
-  const fontColors = range.getFontColors();
-  const fontSizes = range.getFontSizes();
-  const fontWeights = range.getFontWeights();
-  const fontStyles = range.getFontStyles();
-  const horizontal = range.getHorizontalAlignments();
-  const vertical = range.getVerticalAlignments();
-  const wraps = range.getWraps();
+  const SHEET_INDEX = 0;
+
+  const RANGE_A1 = "A1:AA28";
 
   const START_ROW = 1;
   const START_COL = 1;
 
   const NUM_ROWS = 28;
   const NUM_COLS = 27;
+
+
+  // =========================================================
+  // GET SHEET
+  // =========================================================
+
+  const spreadsheet =
+    SpreadsheetApp.openById(SPREADSHEET_ID);
+
+  const sheet =
+    spreadsheet.getSheets()[SHEET_INDEX];
+
+  const range =
+    sheet.getRange(RANGE_A1);
+
+
+  // =========================================================
+  // GET CELL DATA
+  // =========================================================
+
+  const values =
+    range.getDisplayValues();
+
+  const backgrounds =
+    range.getBackgrounds();
+
+  const fontColors =
+    range.getFontColors();
+
+  const fontSizes =
+    range.getFontSizes();
+
+  const fontWeights =
+    range.getFontWeights();
+
+  const fontStyles =
+    range.getFontStyles();
+
+  const horizontalAlignments =
+    range.getHorizontalAlignments();
+
+  const verticalAlignments =
+    range.getVerticalAlignments();
+
+  const wraps =
+    range.getWraps();
+
 
   // =========================================================
   // COLUMN WIDTHS
@@ -33,10 +71,15 @@ function doGet() {
   const columnWidths = [];
 
   for (let c = 0; c < NUM_COLS; c++) {
-    columnWidths.push(
-      sheet.getColumnWidth(START_COL + c)
-    );
+
+    const width =
+      sheet.getColumnWidth(
+        START_COL + c
+      );
+
+    columnWidths.push(width);
   }
+
 
   // =========================================================
   // ROW HEIGHTS
@@ -45,47 +88,71 @@ function doGet() {
   const rowHeights = [];
 
   for (let r = 0; r < NUM_ROWS; r++) {
-    rowHeights.push(
-      sheet.getRowHeight(START_ROW + r)
-    );
+
+    const height =
+      sheet.getRowHeight(
+        START_ROW + r
+      );
+
+    rowHeights.push(height);
   }
 
+
   // =========================================================
-  // MERGED CELLS
+  // FIND MERGED CELLS
   // =========================================================
 
-  const mergedMap = {};
+  const mergedCells = {};
 
-  range.getMergedRanges().forEach(merged => {
+  const mergedRanges =
+    range.getMergedRanges();
 
-    const r = merged.getRow() - START_ROW;
-    const c = merged.getColumn() - START_COL;
 
-    const rowSpan = merged.getNumRows();
-    const colSpan = merged.getNumColumns();
+  mergedRanges.forEach(function(merged) {
 
-    mergedMap[r + "," + c] = {
+    const row =
+      merged.getRow() - START_ROW;
+
+    const col =
+      merged.getColumn() - START_COL;
+
+    const rowSpan =
+      merged.getNumRows();
+
+    const colSpan =
+      merged.getNumColumns();
+
+
+    // Store main merged cell
+    mergedCells[row + "," + col] = {
       rowSpan: rowSpan,
-      colSpan: colSpan
+      colSpan: colSpan,
+      skip: false
     };
 
+
+    // Mark all other cells inside merge as skipped
     for (
-      let rr = r;
-      rr < r + rowSpan;
-      rr++
+      let r = row;
+      r < row + rowSpan;
+      r++
     ) {
 
       for (
-        let cc = c;
-        cc < c + colSpan;
-        cc++
+        let c = col;
+        c < col + colSpan;
+        c++
       ) {
 
-        if (rr === r && cc === c) {
+        if (
+          r === row &&
+          c === col
+        ) {
           continue;
         }
 
-        mergedMap[rr + "," + cc] = {
+
+        mergedCells[r + "," + c] = {
           skip: true
         };
 
@@ -95,174 +162,316 @@ function doGet() {
 
   });
 
+
   // =========================================================
-  // HTML
+  // START HTML
   // =========================================================
 
-  let html = `
-    <div class="sheet">
-      <table>
-        <colgroup>
-  `;
+  let html = "";
+
+
+  html += `
+<div class="sheet-wrapper">
+  <table class="sheet-table">
+    <colgroup>
+`;
+
 
   // =========================================================
   // COLUMN WIDTHS
   // =========================================================
 
-  for (let c = 0; c < NUM_COLS; c++) {
+  for (
+    let c = 0;
+    c < NUM_COLS;
+    c++
+  ) {
 
     html += `
-      <col style="width:${columnWidths[c]}px">
-    `;
+      <col
+        style="width:${columnWidths[c]}px"
+      >
+`;
 
   }
 
+
   html += `
-        </colgroup>
-  `;
+    </colgroup>
+`;
+
 
   // =========================================================
   // ROWS
   // =========================================================
 
-  for (let r = 0; r < NUM_ROWS; r++) {
+  for (
+    let r = 0;
+    r < NUM_ROWS;
+    r++
+  ) {
 
     html += `
-      <tr style="height:${rowHeights[r]}px">
-    `;
+    <tr
+      class="sheet-row"
+      style="height:${rowHeights[r]}px"
+    >
+`;
 
-    for (let c = 0; c < NUM_COLS; c++) {
 
-      const merge = mergedMap[r + "," + c];
+    // =======================================================
+    // COLUMNS
+    // =======================================================
 
-      // Skip cells covered by a merged cell
-      if (merge && merge.skip) {
+    for (
+      let c = 0;
+      c < NUM_COLS;
+      c++
+    ) {
+
+
+      // -----------------------------------------------------
+      // MERGED CELL CHECK
+      // -----------------------------------------------------
+
+      const merge =
+        mergedCells[r + "," + c];
+
+
+      if (
+        merge &&
+        merge.skip
+      ) {
+
         continue;
+
       }
 
-      const value = String(values[r][c] || "");
 
-      const bg = backgrounds[r][c];
-      const color = fontColors[r][c];
-      const size = fontSizes[r][c];
-      const weight = fontWeights[r][c];
-      const style = fontStyles[r][c];
+      // -----------------------------------------------------
+      // CELL VALUE
+      // -----------------------------------------------------
 
-      const align =
-        horizontal[r][c] || "left";
+      const value =
+        String(
+          values[r][c] || ""
+        );
 
-      const valign =
-        vertical[r][c] || "middle";
+
+      // -----------------------------------------------------
+      // CELL FORMAT
+      // -----------------------------------------------------
+
+      const background =
+        backgrounds[r][c] ||
+        "#ffffff";
+
+
+      const fontColor =
+        fontColors[r][c] ||
+        "#000000";
+
+
+      const fontSize =
+        fontSizes[r][c] ||
+        10;
+
+
+      const fontWeight =
+        fontWeights[r][c] ||
+        "normal";
+
+
+      const fontStyle =
+        fontStyles[r][c] ||
+        "normal";
+
+
+      const horizontal =
+        horizontalAlignments[r][c] ||
+        "left";
+
+
+      const vertical =
+        verticalAlignments[r][c] ||
+        "middle";
+
 
       const wrap =
-        wraps[r][c]
-          ? "normal"
-          : "nowrap";
+        wraps[r][c];
 
-      // =====================================================
-      // BORDER
-      // =====================================================
+
+      // -----------------------------------------------------
+      // BORDER LOGIC
+      // -----------------------------------------------------
 
       const hasText =
-        value.trim() !== "";
+        value.trim().length > 0;
+
 
       const hasBackground =
-        bg.toLowerCase() !== "#ffffff" &&
-        bg.toLowerCase() !== "#fff";
+        background.toLowerCase() !==
+        "#ffffff";
 
-      let border = "none";
 
-      if (hasText || hasBackground) {
-        border = "1px solid #777";
+      let border =
+        "none";
+
+
+      if (
+        hasText ||
+        hasBackground
+      ) {
+
+        border =
+          "1px solid #777";
+
       }
 
-      // =====================================================
-      // SPECIAL ZON LABEL
-      // =====================================================
 
-      let extraStyle = "";
+      // -----------------------------------------------------
+      // SPECIAL ZON LABEL
+      // -----------------------------------------------------
+
+      let specialStyle = "";
+
 
       if (
         value.indexOf("ZON A:") !== -1 ||
         value.indexOf("ZON B:") !== -1
       ) {
 
-        extraStyle = `
-          white-space: nowrap;
-          overflow: visible;
-          font-weight: bold;
-          text-align: left;
+        specialStyle += `
+          white-space:nowrap;
+          overflow:visible;
+          font-weight:bold;
+          text-align:left;
         `;
 
       }
 
-      // =====================================================
-      // MERGE
-      // =====================================================
 
-      let colspan = "";
-      let rowspan = "";
+      // -----------------------------------------------------
+      // MERGE ATTRIBUTES
+      // -----------------------------------------------------
+
+      let colspan =
+        "";
+
+
+      let rowspan =
+        "";
+
 
       if (merge) {
 
-        if (merge.colSpan > 1) {
+        if (
+          merge.colSpan &&
+          merge.colSpan > 1
+        ) {
+
           colspan =
-            `colspan="${merge.colSpan}"`;
+            ` colspan="${merge.colSpan}"`;
+
         }
 
-        if (merge.rowSpan > 1) {
+
+        if (
+          merge.rowSpan &&
+          merge.rowSpan > 1
+        ) {
+
           rowspan =
-            `rowspan="${merge.rowSpan}"`;
+            ` rowspan="${merge.rowSpan}"`;
+
         }
 
       }
 
-      // =====================================================
-      // CELL
-      // =====================================================
+
+      // -----------------------------------------------------
+      // WHITE SPACE
+      // -----------------------------------------------------
+
+      const whiteSpace =
+        wrap
+          ? "normal"
+          : "nowrap";
+
+
+      // -----------------------------------------------------
+      // CELL HTML
+      // -----------------------------------------------------
 
       html += `
-        <td
-          ${colspan}
-          ${rowspan}
-          style="
-            background: ${bg};
-            color: ${color};
-            font-size: ${size}px;
-            font-weight: ${weight};
-            font-style: ${style};
-            text-align: ${align};
-            vertical-align: ${valign};
-            white-space: ${wrap};
-            border: ${border};
-            ${extraStyle}
-          "
-        >${escapeHtml(value)}</td>
-      `;
+      <td
+        class="sheet-cell"
+        ${colspan}
+        ${rowspan}
+        style="
+          background-color:${background};
+          color:${fontColor};
+          font-size:${fontSize}px;
+          font-weight:${fontWeight};
+          font-style:${fontStyle};
+          text-align:${horizontal};
+          vertical-align:${vertical};
+          white-space:${whiteSpace};
+          border:${border};
+          ${specialStyle}
+        "
+      >${escapeHtml(value)}</td>
+`;
 
     }
 
+
+    // =======================================================
+    // END ROW
+    // =======================================================
+
     html += `
-      </tr>
-    `;
+    </tr>
+`;
 
   }
 
-  html += `
-      </table>
-    </div>
-  `;
 
   // =========================================================
-  // RESPONSE
+  // END TABLE
   // =========================================================
+
+  html += `
+  </table>
+</div>
+`;
+
+
+  // =========================================================
+  // RETURN JSON
+  // =========================================================
+
+  const response = {
+
+    success: true,
+
+    range: RANGE_A1,
+
+    rows: NUM_ROWS,
+
+    columns: NUM_COLS,
+
+    html: html,
+
+    updated:
+      new Date().toISOString()
+
+  };
+
 
   return ContentService
     .createTextOutput(
-      JSON.stringify({
-        html: html,
-        updated: new Date().toLocaleTimeString()
-      })
+      JSON.stringify(response)
     )
     .setMimeType(
       ContentService.MimeType.JSON
@@ -271,17 +480,38 @@ function doGet() {
 }
 
 
-// =========================================================
+
+// =============================================================
 // ESCAPE HTML
-// =========================================================
+// =============================================================
 
 function escapeHtml(value) {
 
   return String(value)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+
+    .replace(
+      /</g,
+      "&lt;"
+    )
+
+    .replace(
+      />/g,
+      "&gt;"
+    )
+
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+
+    .replace(
+      /'/g,
+      "&#039;"
+    );
 
 }
