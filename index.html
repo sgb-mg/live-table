@@ -1,471 +1,419 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html>
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<meta charset="UTF-8">
+  <title>Live Table</title>
 
-<meta
-  name="viewport"
-  content="width=device-width, initial-scale=1.0"
->
+  <style>
+    /* =====================================================
+       RESET
+    ===================================================== */
 
-<title>Senarai No Pacak Kolam A SGB</title>
+    * {
+      box-sizing: border-box;
+    }
 
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100%;
+      background: #ffffff;
+    }
 
-<style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      color: #000000;
+      font-size: 14px;
+      overflow-x: hidden;
+    }
 
-/* =========================================================
-   RESET
-   ========================================================= */
 
-* {
-  box-sizing: border-box;
-}
+    /* =====================================================
+       STATUS
+    ===================================================== */
 
-html,
-body {
-  margin: 0;
-  padding: 0;
+    #status {
+      display: block;
 
-  width: 100%;
-  min-height: 100%;
+      margin: 0;
+      padding: 4px 6px;
 
-  background: #ffffff;
+      height: 26px;
 
-  font-family:
-    Arial,
-    Helvetica,
-    sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 12px;
+      line-height: 18px;
 
-  color: #000000;
-}
+      color: #777777;
 
+      background: #ffffff;
+    }
 
-/* =========================================================
-   STATUS
-   ========================================================= */
 
-#status {
+    /* =====================================================
+       TABLE CONTAINER
+    ===================================================== */
 
-  display: block;
+    .table-container {
+      display: block;
 
-  width: 100%;
+      width: 100%;
+      max-width: 100%;
 
-  margin: 0;
-  padding: 4px 4px 8px 4px;
+      margin: 0;
+      padding: 0;
 
-  background: #ffffff;
+      overflow-x: auto;
+      overflow-y: visible;
 
-  font-family: Arial, Helvetica, sans-serif;
+      -webkit-overflow-scrolling: touch;
+    }
 
-  font-size: 13px;
-  line-height: 16px;
 
-  color: #777777;
-}
+    /* =====================================================
+       TABLE AREA
+    ===================================================== */
 
+    #table {
+      display: block;
 
-/* =========================================================
-   MAIN TABLE VIEW
-   ========================================================= */
+      width: max-content;
+      min-width: 0;
 
-.table-container {
+      margin: 0;
+      padding: 0;
 
-  display: block;
+      background: #ffffff;
+    }
 
-  width: 100%;
-  max-width: 100%;
 
-  margin: 0;
-  padding: 0;
+    /* =====================================================
+       SHEET
+    ===================================================== */
 
-  overflow-x: auto;
-  overflow-y: hidden;
+    .sheet-wrapper,
+    .sheet {
+      display: block;
 
-  background: #ffffff;
+      width: max-content;
+      min-width: 0;
 
-  -webkit-overflow-scrolling: touch;
-}
+      margin: 0;
+      padding: 0;
 
+      background: #ffffff;
+    }
 
-/* =========================================================
-   SHEET
-   ========================================================= */
 
-.sheet {
+    /* =====================================================
+       TABLE
+       
+       IMPORTANT:
+       Do NOT force borders here.
+       Do NOT force padding here.
+       Do NOT force colors here.
+       Apps Script supplies the actual cell formatting.
+    ===================================================== */
 
-  display: block;
+    .sheet-table,
+    .sheet table {
+      display: table;
 
-  width: max-content;
-  min-width: max-content;
+      border-collapse: collapse;
+      border-spacing: 0;
 
-  margin: 0;
-  padding: 0;
+      table-layout: fixed;
 
-  background: #ffffff;
-}
+      width: max-content;
+      min-width: 0;
 
+      margin: 0;
+      padding: 0;
 
-/* =========================================================
-   TABLE
-   ========================================================= */
+      background: #ffffff;
+    }
 
-.sheet table {
 
-  display: table;
+    /* =====================================================
+       COLUMNS
+    ===================================================== */
 
-  border-collapse: collapse;
-  border-spacing: 0;
+    .sheet-table col,
+    .sheet table col {
+      box-sizing: border-box;
+    }
 
-  table-layout: fixed;
 
-  width: max-content;
-  min-width: max-content;
+    /* =====================================================
+       ROWS
+    ===================================================== */
 
-  margin: 0;
-  padding: 0;
+    .sheet-table tr,
+    .sheet table tr {
+      margin: 0;
+      padding: 0;
+    }
 
-  background: #ffffff;
-}
 
+    /* =====================================================
+       CELLS
+       
+       Apps Script sends:
+       - background
+       - color
+       - font size
+       - font weight
+       - font style
+       - alignment
+       - border
+       - rowspan
+       - colspan
+    ===================================================== */
 
-/* =========================================================
-   COLUMN WIDTH
-   ========================================================= */
+    .sheet-table td,
+    .sheet table td {
+      box-sizing: border-box;
 
-.sheet col {
+      margin: 0;
 
-  margin: 0;
-  padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
 
-}
+      line-height: normal;
 
+      background-clip: padding-box;
 
-/* =========================================================
-   ROW
-   ========================================================= */
+      text-rendering: geometricPrecision;
 
-.sheet tr {
+      vertical-align: middle;
+    }
 
-  margin: 0;
-  padding: 0;
 
-}
+    /* =====================================================
+       DO NOT ADD EXTRA BORDERS
+       
+       The Apps Script decides which cells have borders.
+    ===================================================== */
 
+    .sheet-table td,
+    .sheet table td {
+      border-style: inherit;
+      border-width: inherit;
+      border-color: inherit;
+    }
 
-/* =========================================================
-   CELL
-   ========================================================= */
 
-.sheet td {
+    /* =====================================================
+       ZON A / ZON B
+    ===================================================== */
 
-  margin: 0;
-  padding: 3px 6px;
+    .sheet-table td[style*="white-space:nowrap"],
+    .sheet table td[style*="white-space:nowrap"] {
+      overflow: visible;
+    }
 
-  box-sizing: border-box;
 
-  font-family:
-    Arial,
-    Helvetica,
-    sans-serif;
+    /* =====================================================
+       SCROLLBAR
+    ===================================================== */
 
-  font-size: inherit;
+    .table-container::-webkit-scrollbar {
+      height: 12px;
+    }
 
-  line-height: normal;
+    .table-container::-webkit-scrollbar-track {
+      background: #eeeeee;
+    }
 
-  color: inherit;
+    .table-container::-webkit-scrollbar-thumb {
+      background: #999999;
+      border-radius: 6px;
+    }
 
-  vertical-align: middle;
+    .table-container::-webkit-scrollbar-thumb:hover {
+      background: #777777;
+    }
 
-  background-clip: padding-box;
 
-  overflow: visible;
+    /* =====================================================
+       MOBILE
+    ===================================================== */
 
-}
+    @media (max-width: 600px) {
 
+      #status {
+        height: 24px;
 
-/* =========================================================
-   CELLS WITH MERGING
-   ========================================================= */
+        padding: 3px 5px;
 
-.sheet td[colspan],
-.sheet td[rowspan] {
+        font-size: 11px;
+        line-height: 18px;
+      }
 
-  overflow: visible;
+      .table-container {
+        width: 100%;
+        overflow-x: auto;
+      }
 
-}
+      #table {
+        width: max-content;
+      }
 
-
-/* =========================================================
-   ZON LABELS
-   ========================================================= */
-
-/*
-   The Google Sheet has:
-   ZON A: 001-205
-   ZON B: 206-428
-
-   Keep these on a single line.
-*/
-
-.sheet td {
-
-  white-space: nowrap;
-
-}
-
-
-/* =========================================================
-   HEADER TEXT
-   ========================================================= */
-
-.sheet td[colspan] {
-
-  white-space: nowrap;
-
-}
-
-
-/* =========================================================
-   TABLE NUMBER CELLS
-   ========================================================= */
-
-.sheet td[style*="background:#d9ead3"],
-.sheet td[style*="background:#D9EAD3"] {
-
-  background: #d9ead3;
-
-}
-
-
-/* =========================================================
-   BOOKED CELLS
-   ========================================================= */
-
-.sheet td[style*="background:#ff0000"],
-.sheet td[style*="background:#FF0000"] {
-
-  background: #ff0000;
-
-}
-
-
-/* =========================================================
-   REMOVE OUTER EMPTY GRID VISUALS
-   ========================================================= */
-
-/*
-   Empty white cells from the header area should not
-   visually create a spreadsheet grid.
-*/
-
-.sheet td[style*="border:none"] {
-
-  border: none !important;
-
-}
-
-
-/* =========================================================
-   SCROLL BAR
-   ========================================================= */
-
-.table-container::-webkit-scrollbar {
-
-  width: 10px;
-  height: 10px;
-
-}
-
-.table-container::-webkit-scrollbar-track {
-
-  background: #eeeeee;
-
-}
-
-.table-container::-webkit-scrollbar-thumb {
-
-  background: #999999;
-
-  border-radius: 5px;
-
-}
-
-.table-container::-webkit-scrollbar-thumb:hover {
-
-  background: #777777;
-
-}
-
-
-/* =========================================================
-   MOBILE
-   ========================================================= */
-
-@media screen and (max-width: 700px) {
-
-  #status {
-
-    padding: 4px;
-
-    font-size: 12px;
-
-  }
-
-  .sheet td {
-
-    padding: 2px 4px;
-
-  }
-
-}
-
-
-/* =========================================================
-   PRINT
-   ========================================================= */
-
-@media print {
-
-  #status {
-
-    display: none;
-
-  }
-
-  .table-container {
-
-    overflow: visible;
-
-  }
-
-  .sheet {
-
-    width: max-content;
-
-  }
-
-}
-
-</style>
-
+    }
+  </style>
 </head>
 
 
 <body>
 
+  <!-- =====================================================
+       STATUS
+  ===================================================== -->
 
-<!-- =======================================================
-     STATUS
-     ======================================================= -->
-
-<div id="status">
-  Loading...
-</div>
-
-
-<!-- =======================================================
-     TABLE
-     ======================================================= -->
-
-<div class="table-container">
-
-  <div id="table"></div>
-
-</div>
+  <div id="status">
+    Loading...
+  </div>
 
 
-<script>
+  <!-- =====================================================
+       TABLE
+  ===================================================== -->
 
-/* =========================================================
-   GOOGLE APPS SCRIPT URL
-   ========================================================= */
-
-const API_URL =
-"https://script.google.com/macros/s/AKfycbxs3pvu4QUPxHRdOu7sLILk88GkOzEAA5e-l7JUUNapAC69u_UL412E2uEwHdSf5Wjb/exec";
+  <div class="table-container">
+    <div id="table"></div>
+  </div>
 
 
-/* =========================================================
-   LOAD TABLE
-   ========================================================= */
+  <script>
 
-async function updateTable() {
+    // =====================================================
+    // GOOGLE APPS SCRIPT URL
+    // =====================================================
 
-  try {
+    const API_URL =
+      "https://script.google.com/macros/s/AKfycbxs3pvu4QUPxHRdOu7sLILk88GkOzEAA5e-l7JUUNapAC69u_UL412E2uEwHdSf5Wjb/exec";
 
-    const response =
-      await fetch(
-        API_URL + "?t=" + Date.now(),
-        {
-          cache: "no-store"
+
+    // =====================================================
+    // UPDATE TABLE
+    // =====================================================
+
+    async function updateTable() {
+
+      const status =
+        document.getElementById("status");
+
+      const table =
+        document.getElementById("table");
+
+
+      try {
+
+        status.textContent =
+          "Updating...";
+
+
+        const response =
+          await fetch(
+            API_URL +
+            "?t=" +
+            Date.now(),
+            {
+              method: "GET",
+              cache: "no-store"
+            }
+          );
+
+
+        if (!response.ok) {
+
+          throw new Error(
+            "HTTP " +
+            response.status
+          );
+
         }
-      );
 
 
-    if (!response.ok) {
+        const data =
+          await response.json();
 
-      throw new Error(
-        "HTTP " + response.status
-      );
+
+        if (
+          !data ||
+          !data.html
+        ) {
+
+          throw new Error(
+            "Invalid table data"
+          );
+
+        }
+
+
+        // -------------------------------------------------
+        // Replace table
+        // -------------------------------------------------
+
+        table.innerHTML =
+          data.html;
+
+
+        // -------------------------------------------------
+        // Update status
+        // -------------------------------------------------
+
+        if (data.updated) {
+
+          status.textContent =
+            "Last updated: " +
+            data.updated;
+
+        } else {
+
+          status.textContent =
+            "Live";
+
+        }
+
+
+      } catch (error) {
+
+        console.error(
+          "Table update error:",
+          error
+        );
+
+
+        status.textContent =
+          "Update failed";
+
+
+      }
 
     }
 
 
-    const data =
-      await response.json();
+    // =====================================================
+    // INITIAL LOAD
+    // =====================================================
+
+    updateTable();
 
 
-    /* -----------------------------------------------
-       Put Google Sheet HTML into website
-       ----------------------------------------------- */
+    // =====================================================
+    // AUTO REFRESH
+    // =====================================================
 
-    document.getElementById("table")
-      .innerHTML = data.html;
+    setInterval(
+      updateTable,
+      5000
+    );
 
-
-    /* -----------------------------------------------
-       Update status
-       ----------------------------------------------- */
-
-    document.getElementById("status")
-      .textContent =
-        "Last updated: " + data.updated;
-
-
-  } catch (error) {
-
-    console.error(error);
-
-
-    document.getElementById("status")
-      .textContent =
-        "Update failed";
-
-  }
-
-}
-
-
-/* =========================================================
-   FIRST LOAD
-   ========================================================= */
-
-updateTable();
-
-
-/* =========================================================
-   AUTO REFRESH EVERY 5 SECONDS
-   ========================================================= */
-
-setInterval(
-  updateTable,
-  5000
-);
-
-</script>
-
+  </script>
 
 </body>
-
 </html>
