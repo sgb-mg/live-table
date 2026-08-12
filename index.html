@@ -1,51 +1,47 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Live Table</title>
+<title>Live Table</title>
 
-  <style>
-    body {
-      margin: 0;
-      padding: 10px;
-      font-family: Arial, sans-serif;
-      background: #ffffff;
-    }
+<style>
 
-    #status {
-      font-size: 13px;
-      color: #777;
-      margin-bottom: 8px;
-    }
+body {
+  margin: 0;
+  padding: 10px;
+  background: white;
+  font-family: Arial, sans-serif;
+}
 
-    .table-container {
-      width: 100%;
-      overflow-x: auto;
-    }
+#status {
+  color: #777;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
 
-    table {
-      border-collapse: collapse;
-      width: 100%;
-    }
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+}
 
-    th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
-      text-align: left;
-      white-space: nowrap;
-    }
+.sheet {
+  display: inline-block;
+}
 
-    th {
-      background: #f2f2f2;
-      font-weight: bold;
-    }
+.sheet table {
+  border-collapse: collapse;
+  table-layout: auto;
+}
 
-    tr:nth-child(even) {
-      background: #fafafa;
-    }
-  </style>
+.sheet td {
+  height: 28px;
+  min-width: 38px;
+  box-sizing: border-box;
+}
+
+</style>
 </head>
 
 <body>
@@ -58,61 +54,38 @@
 
 <script>
 
-const API_URL = "https://script.google.com/macros/s/AKfycbyI1bRWbEuZYIQaXp0h6U2FkW0OtRySj4Y9XEFrutZ6iByFUVNkUcuwnA6TvqVYozKz3A/exec";
+const API_URL =
+"https://script.google.com/macros/s/AKfycbyI1bRWbEuZYIQaXp0h6U2FkW0OtRySj4Y9XEFrutZ6iByFUVNkUcuwnA6TvqVYozKz3A/exec";
+
 
 async function updateTable() {
 
   try {
 
-    const response = await fetch(
-      API_URL + "?t=" + Date.now()
-    );
-
-    if (!response.ok) {
-      throw new Error("HTTP " + response.status);
-    }
+    const response =
+      await fetch(API_URL + "?t=" + Date.now());
 
     const data = await response.json();
 
-    let html = "<table>";
-
-    data.forEach((row, rowIndex) => {
-
-      html += "<tr>";
-
-      row.forEach(cell => {
-
-        const tag = rowIndex === 0 ? "th" : "td";
-
-        html += `<${tag}>${cell ?? ""}</${tag}>`;
-
-      });
-
-      html += "</tr>";
-
-    });
-
-    html += "</table>";
-
-    document.getElementById("table").innerHTML = html;
+    document.getElementById("table").innerHTML =
+      data.html;
 
     document.getElementById("status").textContent =
-      "Last updated: " + new Date().toLocaleTimeString();
+      "Last updated: " + data.updated;
 
   } catch (error) {
 
     console.error(error);
 
     document.getElementById("status").textContent =
-      "Unable to update";
+      "Update failed";
 
   }
 }
 
-// Load immediately
+
 updateTable();
 
-// Check for changes every 5 seconds
 setInterval(updateTable, 5000);
 
 </script>
