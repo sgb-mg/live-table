@@ -1,517 +1,247 @@
-function doGet() {
+<!DOCTYPE html>
+<html>
 
-  // =========================================================
-  // SETTINGS
-  // =========================================================
+<head>
 
-  const SPREADSHEET_ID =
-    "1TCLAVr4d3C3LRHJyCNRzVS_sqHV4ikWHa-5tafys9QM";
+<meta charset="UTF-8">
 
-  const SHEET_INDEX = 0;
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1"
+>
 
-  const RANGE_A1 = "A1:AA28";
+<title>Senarai No Pacak Kolam A SGB</title>
 
-  const START_ROW = 1;
-  const START_COL = 1;
+<style>
 
-  const NUM_ROWS = 28;
-  const NUM_COLS = 27;
+* {
+  box-sizing: border-box;
+}
 
+html,
+body {
+  margin: 0;
+  padding: 0;
 
-  // =========================================================
-  // GET SHEET
-  // =========================================================
+  background: #ffffff;
 
-  const spreadsheet =
-    SpreadsheetApp.openById(SPREADSHEET_ID);
+  font-family: Arial, Helvetica, sans-serif;
 
-  const sheet =
-    spreadsheet.getSheets()[SHEET_INDEX];
-
-  const range =
-    sheet.getRange(RANGE_A1);
-
-
-  // =========================================================
-  // GET CELL DATA
-  // =========================================================
-
-  const values =
-    range.getDisplayValues();
-
-  const backgrounds =
-    range.getBackgrounds();
-
-  const fontColors =
-    range.getFontColors();
-
-  const fontSizes =
-    range.getFontSizes();
-
-  const fontWeights =
-    range.getFontWeights();
-
-  const fontStyles =
-    range.getFontStyles();
-
-  const horizontalAlignments =
-    range.getHorizontalAlignments();
-
-  const verticalAlignments =
-    range.getVerticalAlignments();
-
-  const wraps =
-    range.getWraps();
+  color: #000000;
+}
 
 
-  // =========================================================
-  // COLUMN WIDTHS
-  // =========================================================
+/* =========================================================
+   STATUS
+   ========================================================= */
 
-  const columnWidths = [];
+#status {
+  margin: 0;
+  padding: 2px 4px 8px 4px;
 
-  for (let c = 0; c < NUM_COLS; c++) {
+  font-size: 13px;
+  line-height: 16px;
 
-    const width =
-      sheet.getColumnWidth(
-        START_COL + c
-      );
+  color: #777777;
+}
 
-    columnWidths.push(width);
+
+/* =========================================================
+   TABLE CONTAINER
+   ========================================================= */
+
+.table-container {
+  width: 100%;
+  max-width: 100%;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  margin: 0;
+  padding: 0;
+}
+
+
+/* =========================================================
+   SHEET
+   ========================================================= */
+
+.sheet {
+  display: block;
+
+  width: max-content;
+
+  margin: 0;
+  padding: 0;
+
+  background: #ffffff;
+}
+
+
+/* =========================================================
+   TABLE
+   ========================================================= */
+
+.sheet table {
+  border-collapse: collapse;
+  border-spacing: 0;
+
+  table-layout: fixed;
+
+  width: max-content;
+
+  margin: 0;
+  padding: 0;
+
+  background: #ffffff;
+}
+
+
+/* =========================================================
+   CELLS
+   ========================================================= */
+
+.sheet td {
+  box-sizing: border-box;
+
+  margin: 0;
+  padding: 3px 6px;
+
+  border: 1px solid #777777;
+
+  font-family: Arial, Helvetica, sans-serif;
+
+  line-height: normal;
+
+  overflow: hidden;
+
+  vertical-align: middle;
+
+  background-clip: padding-box;
+}
+
+
+/* =========================================================
+   MERGED CELLS
+   ========================================================= */
+
+.sheet td[colspan],
+.sheet td[rowspan] {
+  overflow: hidden;
+}
+
+
+/* =========================================================
+   SCROLLBAR
+   ========================================================= */
+
+.table-container::-webkit-scrollbar {
+  height: 10px;
+}
+
+.table-container::-webkit-scrollbar-track {
+  background: #eeeeee;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+  background: #999999;
+  border-radius: 5px;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+  #status {
+    font-size: 12px;
   }
 
-
-  // =========================================================
-  // ROW HEIGHTS
-  // =========================================================
-
-  const rowHeights = [];
-
-  for (let r = 0; r < NUM_ROWS; r++) {
-
-    const height =
-      sheet.getRowHeight(
-        START_ROW + r
-      );
-
-    rowHeights.push(height);
+  .sheet td {
+    padding: 2px 4px;
   }
+}
 
+</style>
 
-  // =========================================================
-  // FIND MERGED CELLS
-  // =========================================================
+</head>
 
-  const mergedCells = {};
 
-  const mergedRanges =
-    range.getMergedRanges();
+<body>
 
 
-  mergedRanges.forEach(function(merged) {
-
-    const row =
-      merged.getRow() - START_ROW;
-
-    const col =
-      merged.getColumn() - START_COL;
-
-    const rowSpan =
-      merged.getNumRows();
-
-    const colSpan =
-      merged.getNumColumns();
-
-
-    // Store main merged cell
-    mergedCells[row + "," + col] = {
-      rowSpan: rowSpan,
-      colSpan: colSpan,
-      skip: false
-    };
-
-
-    // Mark all other cells inside merge as skipped
-    for (
-      let r = row;
-      r < row + rowSpan;
-      r++
-    ) {
-
-      for (
-        let c = col;
-        c < col + colSpan;
-        c++
-      ) {
-
-        if (
-          r === row &&
-          c === col
-        ) {
-          continue;
-        }
-
-
-        mergedCells[r + "," + c] = {
-          skip: true
-        };
-
-      }
-
-    }
-
-  });
-
-
-  // =========================================================
-  // START HTML
-  // =========================================================
-
-  let html = "";
-
-
-  html += `
-<div class="sheet-wrapper">
-  <table class="sheet-table">
-    <colgroup>
-`;
-
-
-  // =========================================================
-  // COLUMN WIDTHS
-  // =========================================================
-
-  for (
-    let c = 0;
-    c < NUM_COLS;
-    c++
-  ) {
-
-    html += `
-      <col
-        style="width:${columnWidths[c]}px"
-      >
-`;
-
-  }
-
-
-  html += `
-    </colgroup>
-`;
-
-
-  // =========================================================
-  // ROWS
-  // =========================================================
-
-  for (
-    let r = 0;
-    r < NUM_ROWS;
-    r++
-  ) {
-
-    html += `
-    <tr
-      class="sheet-row"
-      style="height:${rowHeights[r]}px"
-    >
-`;
-
-
-    // =======================================================
-    // COLUMNS
-    // =======================================================
-
-    for (
-      let c = 0;
-      c < NUM_COLS;
-      c++
-    ) {
-
-
-      // -----------------------------------------------------
-      // MERGED CELL CHECK
-      // -----------------------------------------------------
-
-      const merge =
-        mergedCells[r + "," + c];
-
-
-      if (
-        merge &&
-        merge.skip
-      ) {
-
-        continue;
-
-      }
-
-
-      // -----------------------------------------------------
-      // CELL VALUE
-      // -----------------------------------------------------
-
-      const value =
-        String(
-          values[r][c] || ""
-        );
-
-
-      // -----------------------------------------------------
-      // CELL FORMAT
-      // -----------------------------------------------------
-
-      const background =
-        backgrounds[r][c] ||
-        "#ffffff";
-
-
-      const fontColor =
-        fontColors[r][c] ||
-        "#000000";
-
-
-      const fontSize =
-        fontSizes[r][c] ||
-        10;
-
-
-      const fontWeight =
-        fontWeights[r][c] ||
-        "normal";
-
-
-      const fontStyle =
-        fontStyles[r][c] ||
-        "normal";
-
-
-      const horizontal =
-        horizontalAlignments[r][c] ||
-        "left";
-
-
-      const vertical =
-        verticalAlignments[r][c] ||
-        "middle";
-
-
-      const wrap =
-        wraps[r][c];
-
-
-      // -----------------------------------------------------
-      // BORDER LOGIC
-      // -----------------------------------------------------
-
-      const hasText =
-        value.trim().length > 0;
-
-
-      const hasBackground =
-        background.toLowerCase() !==
-        "#ffffff";
-
-
-      let border =
-        "none";
-
-
-      if (
-        hasText ||
-        hasBackground
-      ) {
-
-        border =
-          "1px solid #777";
-
-      }
-
-
-      // -----------------------------------------------------
-      // SPECIAL ZON LABEL
-      // -----------------------------------------------------
-
-      let specialStyle = "";
-
-
-      if (
-        value.indexOf("ZON A:") !== -1 ||
-        value.indexOf("ZON B:") !== -1
-      ) {
-
-        specialStyle += `
-          white-space:nowrap;
-          overflow:visible;
-          font-weight:bold;
-          text-align:left;
-        `;
-
-      }
-
-
-      // -----------------------------------------------------
-      // MERGE ATTRIBUTES
-      // -----------------------------------------------------
-
-      let colspan =
-        "";
-
-
-      let rowspan =
-        "";
-
-
-      if (merge) {
-
-        if (
-          merge.colSpan &&
-          merge.colSpan > 1
-        ) {
-
-          colspan =
-            ` colspan="${merge.colSpan}"`;
-
-        }
-
-
-        if (
-          merge.rowSpan &&
-          merge.rowSpan > 1
-        ) {
-
-          rowspan =
-            ` rowspan="${merge.rowSpan}"`;
-
-        }
-
-      }
-
-
-      // -----------------------------------------------------
-      // WHITE SPACE
-      // -----------------------------------------------------
-
-      const whiteSpace =
-        wrap
-          ? "normal"
-          : "nowrap";
-
-
-      // -----------------------------------------------------
-      // CELL HTML
-      // -----------------------------------------------------
-
-      html += `
-      <td
-        class="sheet-cell"
-        ${colspan}
-        ${rowspan}
-        style="
-          background-color:${background};
-          color:${fontColor};
-          font-size:${fontSize}px;
-          font-weight:${fontWeight};
-          font-style:${fontStyle};
-          text-align:${horizontal};
-          vertical-align:${vertical};
-          white-space:${whiteSpace};
-          border:${border};
-          ${specialStyle}
-        "
-      >${escapeHtml(value)}</td>
-`;
-
-    }
-
-
-    // =======================================================
-    // END ROW
-    // =======================================================
-
-    html += `
-    </tr>
-`;
-
-  }
-
-
-  // =========================================================
-  // END TABLE
-  // =========================================================
-
-  html += `
-  </table>
+<div id="status">
+  Loading...
 </div>
-`;
 
 
-  // =========================================================
-  // RETURN JSON
-  // =========================================================
+<div class="table-container">
 
-  const response = {
+  <div id="table"></div>
 
-    success: true,
-
-    range: RANGE_A1,
-
-    rows: NUM_ROWS,
-
-    columns: NUM_COLS,
-
-    html: html,
-
-    updated:
-      new Date().toISOString()
-
-  };
+</div>
 
 
-  return ContentService
-    .createTextOutput(
-      JSON.stringify(response)
-    )
-    .setMimeType(
-      ContentService.MimeType.JSON
-    );
+<script>
 
-}
+const API_URL =
+"https://script.google.com/macros/s/AKfycbxs3pvu4QUPxHRdOu7sLILk88GkOzEAA5e-l7JUUNapAC69u_UL412E2uEwHdSf5Wjb/exec";
 
 
+async function updateTable() {
 
-// =============================================================
-// ESCAPE HTML
-// =============================================================
+  try {
 
-function escapeHtml(value) {
+    const response =
+      await fetch(
+        API_URL + "?t=" + Date.now()
+      );
 
-  return String(value)
 
-    .replace(
-      /&/g,
-      "&amp;"
-    )
+    if (!response.ok) {
+      throw new Error(
+        "HTTP " + response.status
+      );
+    }
 
-    .replace(
-      /</g,
-      "&lt;"
-    )
 
-    .replace(
-      />/g,
-      "&gt;"
-    )
+    const data =
+      await response.json();
 
-    .replace(
-      /"/g,
-      "&quot;"
-    )
 
-    .replace(
-      /'/g,
-      "&#039;"
-    );
+    document.getElementById("table")
+      .innerHTML = data.html;
+
+
+    document.getElementById("status")
+      .textContent =
+        "Last updated: " + data.updated;
+
+
+  } catch (error) {
+
+    console.error(error);
+
+    document.getElementById("status")
+      .textContent =
+        "Update failed";
+
+  }
 
 }
+
+
+updateTable();
+
+setInterval(
+  updateTable,
+  5000
+);
+
+</script>
+
+</body>
+
+</html>
